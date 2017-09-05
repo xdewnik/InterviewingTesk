@@ -4,4 +4,10 @@
     <string name="user_password">Password</string>
     <string name="login">login</string>
     <string name="title_activity_maps">Map</string>
+
+
+
+    <string name="google_maps_key" templateMergeStrategy="preserve" translatable="false">
+        AIzaSyBSAy9QCOW4l70YfmJxz9zCU2_vryutTsI
+    </string>
 </resources>
