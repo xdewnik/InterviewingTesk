@@ -33,6 +33,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private double latOdessa;
     private double lngOdessa;
 
+    private final static  int RADIUS_ODESSA = 15;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,11 +57,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
     }
 
-    private void goToLocationZoom(double lat, double lng, int zoom){
-
-        LatLng odessa = new LatLng(lat,lng);
-        mMap.addMarker(new MarkerOptions().position(odessa).title("Marker in Odessa"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(odessa,zoom));
+    private void goToLocationZoom(LatLng marker, int zoom){
+        mMap.addMarker(new MarkerOptions().position(marker).title("Marker in Odessa"));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(marker,zoom));
     }
 
     private void goToGeo(String placeName) throws IOException{
@@ -70,15 +69,15 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         latOdessa = address.getLatitude();
         lngOdessa = address.getLongitude();
-
-        goToLocationZoom(latOdessa, lngOdessa, 13);
+        LatLng odessaarker = new LatLng(latOdessa,lngOdessa);
+        goToLocationZoom(odessaarker, 13);
 
 
     }
 
-    private void generateRandomCoords(double lat, double lng){
-        double latKmValue = 0.00898 * 13;
-        double lngKmValue = 0.01440 * 13;
+    private LatLng generateRandomCoords(double lat, double lng){
+        double latKmValue = 0.00898 * RADIUS_ODESSA;
+        double lngKmValue = 0.01440 * RADIUS_ODESSA;
 
         double latMin = lat - latKmValue;
         double latMax = lat + latKmValue;
@@ -89,12 +88,14 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
          randomLatValue = latMin + (latMax - latMin) * r.nextDouble();
          randomLngValue = lngMin + (lngMax - lngMin) * r.nextDouble();
 
+            LatLng randomMarker = new LatLng(randomLatValue, randomLngValue);
+            return randomMarker;
+
     }
 
     @OnClick(R.id.randomLocationButton)
     public void onRandomButtonClick(){
-        generateRandomCoords(latOdessa,lngOdessa);
-        goToLocationZoom(randomLatValue, randomLngValue, 13);
+        goToLocationZoom(generateRandomCoords(latOdessa,lngOdessa), 13);
 
     }
 }
