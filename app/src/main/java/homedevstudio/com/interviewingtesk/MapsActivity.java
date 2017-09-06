@@ -91,7 +91,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         LatLngBounds ODESSA = new LatLngBounds(
                 new LatLng(latMin, lngMin), new LatLng(latMax, lngMax));
-        LatLng odessaarker = new LatLng(latOdessa,lngOdessa);
         goToLocationZoom(ODESSA, 15);
 
 
