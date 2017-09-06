@@ -14,6 +14,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.io.IOException;
@@ -32,6 +33,14 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private double randomLngValue;
     private double latOdessa;
     private double lngOdessa;
+
+
+    private double latKmValue;
+    private double lngKmValue;
+    private double latMin;
+    private double latMax;
+    private double lngMin;
+    private double lngMax;
 
     private final static  int RADIUS_ODESSA = 15;
     @Override
@@ -57,10 +66,18 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
     }
 
-    private void goToLocationZoom(LatLng marker, int zoom){
-        mMap.addMarker(new MarkerOptions().position(marker).title("Marker in Odessa"));
+    private void goToLocationZoom(LatLngBounds marker, int zoom){
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(marker.getCenter(),zoom));
+        mMap.setLatLngBoundsForCameraTarget(marker);
+        mMap.setMinZoomPreference(12.0f);
+        mMap.setMaxZoomPreference(20.0f);
+    }
+
+    private void goToRandomPlace(LatLng marker, int zoom){
+        mMap.addMarker(new MarkerOptions().position(marker));
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(marker,zoom));
     }
+
 
     private void goToGeo(String placeName) throws IOException{
         Geocoder gc = new Geocoder(this);
@@ -69,20 +86,18 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         latOdessa = address.getLatitude();
         lngOdessa = address.getLongitude();
+
+        generateValues(latOdessa,lngOdessa);
+
+        LatLngBounds ODESSA = new LatLngBounds(
+                new LatLng(latMin, lngMin), new LatLng(latMax, lngMax));
         LatLng odessaarker = new LatLng(latOdessa,lngOdessa);
-        goToLocationZoom(odessaarker, 13);
+        goToLocationZoom(ODESSA, 15);
 
 
     }
 
-    private LatLng generateRandomCoords(double lat, double lng){
-        double latKmValue = 0.00898 * RADIUS_ODESSA;
-        double lngKmValue = 0.01440 * RADIUS_ODESSA;
-
-        double latMin = lat - latKmValue;
-        double latMax = lat + latKmValue;
-        double lngMin = lng - lngKmValue;
-        double lngMax = lng + lngKmValue;
+    private LatLng generateRandomCoords(){
 
         Random r = new Random();
          randomLatValue = latMin + (latMax - latMin) * r.nextDouble();
@@ -95,7 +110,18 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     @OnClick(R.id.randomLocationButton)
     public void onRandomButtonClick(){
-        goToLocationZoom(generateRandomCoords(latOdessa,lngOdessa), 13);
+        goToRandomPlace(generateRandomCoords(), 15);
 
     }
+
+    private void generateValues(double lat, double lng){
+         latKmValue = 0.00898 * RADIUS_ODESSA;
+         lngKmValue = 0.01440 * RADIUS_ODESSA;
+         latMin = lat - latKmValue;
+         latMax = lat + latKmValue;
+         lngMin = lng - lngKmValue;
+         lngMax = lng + lngKmValue;
+    }
+
 }
+
